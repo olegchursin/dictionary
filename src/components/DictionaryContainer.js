@@ -6,14 +6,16 @@ import SearchBar from './SearchBar';
 
 class DictionaryContainer extends React.Component {
   state = {
-    definition: [],
+    definitionOxford: [],
+    definitionWords: [],
+    definitionCambridge: [],
     searchTerm: ''
   }
-
   // CORS anywhere patch
   // https://cors-anywhere.herokuapp.com/
 
   handleFetch = () => {
+    console.log("fetching")
     fetch(`https://cors-anywhere.herokuapp.com/https://od-api.oxforddictionaries.com/api/v1/entries/en/${this.state.searchTerm}`, {
       headers: {
         "Accept": "application/json",
@@ -22,7 +24,11 @@ class DictionaryContainer extends React.Component {
       }
     })
     .then(res => res.json())
-    .then(console.log)
+    .then(res => {
+      this.setState({
+        definitionOxford: res.results[0].lexicalEntries
+      }, () => console.log(this.state.definitionOxford))
+    })
   }
 
   handleChange = (e) => {
@@ -34,16 +40,22 @@ class DictionaryContainer extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.handleFetch();
-    // this.handleApi();
   }
-
-
 
   render(){
     return (
-      <div>
-        <SearchBar searchTerm={this.state.searchTerm} handleChange={this.handleChange} handleSubmit={this.handleSubmit} />
-        <DictionaryDefinition />
+      <div className="ui main text container">
+        <h1>Enter a word to define</h1>
+        <SearchBar
+          searchTerm={this.state.searchTerm}
+          handleChange={this.handleChange}
+          handleSubmit={this.handleSubmit}
+        />
+        <DictionaryDefinition
+          definitionOxford={this.state.definitionOxford}
+          definitionCambridge={this.state.definitionCambridge}
+          definitionWords={this.state.definitionWords}
+        />
       </div>
     )
   }
